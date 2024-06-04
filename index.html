@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
+    <title>Catch the Water Drops</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            /* margin: 0; */
+            background-image: url('bi.jpg');
+            background-size: cover; 
+            background-position: center;
+            background-repeat: no-repeat; 
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        #board {
+            width: 80vmin;
+            height: 92vmin;
+            display: grid;
+            grid-template-rows: repeat(15, 1fr);
+            grid-template-columns: repeat(14, 1fr);
+            position: relative;
+        }
+        #glass {
+            display: none;
+            background-image: url('g.png');
+            background-size: cover;
+            border-radius: 10%;
+            grid-row-start: 15;
+            grid-column-start: 10;
+	/* height:60px;
+	width:60px; */
+        }
+        .wat {
+            background-image: url('d.png'); 
+            background-size: cover;
+            /* height: 50px;
+            width: 50px; */
+            grid-row-start: 1;
+        }
+
+        #score, #hsc {
+            border: 2px solid black;
+            width: 200px;
+            height: 50px;
+            text-align: center;
+            padding-top: 10px;
+            border-radius: 5%;
+            background-color: skyblue;
+            color: white;
+            position: absolute;
+            top: 20px;
+        }
+        #hsc {
+            width: 300px; /* Adjusted width for better display */
+            right: 20px;
+        }
+        #score {
+            left: 20px;
+        }
+        #instructions {
+            background-color: rgba(0, 0, 0, 0.7);
+            /* padding: 20px; */
+            width: 600px;
+            border-radius: 10px;
+            text-align: center;
+            /* margin-bottom: 20px; */
+            font-size: 20px;
+            /* position: absolute;
+            top: 30px;  */
+            grid-row-start:6;
+            grid-column-start: 7;
+        }
+        #over{
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            width: 600px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 20px;
+            position: absolute;
+            top: 50px; 
+        }
+        #stbu {
+            grid-row-start: 7;
+            grid-column-start: 7;
+            margin-left: 35%;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            background-color: rgba(255, 250, 255, 0.8);
+            border: none;
+            transition: background-color 0.3s;
+        }
+        #stbu:hover {
+            background-color: rgba(255, 255, 255, 1);
+        }
+        .ice{
+            background-image: url('ice.png');
+            background-repeat: no-repeat;
+            background-size: cover;
+            /* background-color:aliceblue; */
+            /* border-radius: 10%; */
+            /* border: 2px solid black; */
+            grid-row-start: 0;
+        }
+        #gal{
+            width: 100;
+            height: 50;
+            /* border: 2px solid black; */
+            position: absolute;
+            top: 10px;
+            /* margin-bottom: 650px; */
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    
+    <div id="over" style="display:none; margin-top: 150px;">
+        <h2>You PLayed Very Well</h2>
+        <p>Play Again and Cross the Highest Score</p>
+        <button onclick="restart()" style="font-size: 20px; border-radius: 20px; cursor: pointer; padding: 10px;">Start Again</button>
+    </div>
+    <h1 id="score">Score: <span id="sc">0</span></h1>
+    <div id="gal">
+        <img src="g.png" id="i1" style="width: 50px; height: 50px;">
+        <img src="g.png" id="i2" style="width: 50px; height: 50px;" >
+        <img src="g.png" id="i3" style="width: 50px; height: 50px; ">
+    </div>
+    <div id="board">
+        <div id="instructions">
+            <h2>How to Play</h2>
+            <p>Use the left and right arrow keys to move the glass.<br>In Mobile phone Move the Glass</p>
+            <p>Catch the falling water drops in the glass to score points.</p>
+            <p>Avoid the Ice to keep the game going.</p>
+            <p>If you Catch the Ice then the glass will break.</p>
+            <p>But Don't Worry there is 3 glasses.</p>
+        </div>
+        <button id="stbu" onclick="start()">Start</button>
+        <div id="glass"></div>
+    </div>
+    <h1 id="hsc">Highest Score: <span id="water">0</span></h1>
+    <audio src="start.mp3" id="start"></audio>
+    <audio src="watersound.mp3" id="watersound"></audio>
+    <audio src="glassbreaking.mp3" id="glassbreaking"></audio>
+    <audio id="bg-music" loop>
+        <source src="rain.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    <script>
+        let glassdir = { x: 16, y: 10 };
+        let waterarr = [];
+        let icearr=[];
+        let score = 0;
+        let glassover=0;
+        let g1,g2,g3,g4;
+        let highscore = localStorage.getItem('water') || 0;
+        document.getElementById('water').innerHTML = highscore;
+
+        function createwater() {
+            let wat = document.createElement('div');
+            wat.classList.add('wat');
+            document.getElementById('board').appendChild(wat);
+            let ran = Math.floor(Math.random() * 14);
+            if (ran === 0 || ran === 1) {
+                ran = 2;
+            }
+            waterarr.push({ element: wat, col: ran, row: 0 });
+        }
+        function createice()
+        {
+            let ice=document.createElement('div');
+            ice.classList.add('ice');
+            document.getElementById('board').appendChild(ice);
+            let ran = Math.floor(Math.random() * 14);
+            if (ran === 0 || ran === 1) {
+                ran = 2;
+            }
+            icearr.push({element:ice,col:ran,row:0});
+        }
+
+        function waterdown(i) {
+            if (i.row > 16) {
+                i.element.remove();
+                return;
+            }
+            i.element.style.gridColumnStart = i.col;
+            i.element.style.gridRowStart = i.row;
+            i.row += 1;
+        }
+        function icedown(i)
+        {
+            if (i.row > 16) {
+                i.element.remove();
+                return;
+            }
+            i.element.style.gridColumnStart = i.col;
+            i.element.style.gridRowStart = i.row;
+            i.row += 1;   
+        }
+        function restart()
+        {
+            location.reload();
+        }
+        function start() {
+            document.getElementById('start').play();
+            setTimeout(()=>{
+                document.getElementById('instructions').style.display = 'none'; // Hide instructions
+                document.getElementById('gal').style.display='block';
+                let startButton = document.getElementById('stbu');
+                let glass = document.getElementById('glass');
+                startButton.style.display = 'none';
+                glass.style.display ='block';
+                document.getElementById('bg-music').play();
+                slowwater();
+                fastice();
+            },400);
+            
+            // ice();
+            // water();
+        }
+        function slowwater() {
+            createwater();
+            g1=setTimeout(slowwater, 1500);
+        }
+        function fastice()
+        {
+            createice();
+            g2=setTimeout(fastice,1000);
+        }
+
+        function water() {
+            waterarr.forEach(i => {
+                waterdown(i);
+                if (i.row == glassdir.x && i.col == glassdir.y) {
+                    score += 1;
+                    document.getElementById('watersound').play();
+                    i.element.remove();
+                }
+            });
+            document.getElementById('sc').innerHTML = score;
+            if (score > highscore) {
+                localStorage.setItem('water', score);
+                document.getElementById('water').innerHTML = score;
+            }
+            g3=setTimeout(water, 200);
+        }
+        water();
+        let k=1;
+        function ice()
+        {
+            icearr.forEach(i=>{
+                icedown(i);
+                if(i.row==glassdir.x && i.col == glassdir.y)
+                {
+                    // let a='i1'
+                    i.element.remove();
+                    let imgarr=['id0','i1','i2','i3'];
+                    document.getElementById(imgarr[k]).style.display='none';
+                    document.getElementById('glassbreaking').play();
+                    k+=1;
+                    glassover+=1;
+                }
+            });
+            if(glassover>=3)
+            {
+                clearTimeout(g1);
+                clearTimeout(g2);
+                clearTimeout(g3);
+                clearTimeout(g4);
+                document.getElementById('board').style.display='none';
+                document.getElementById('over').style.display='block';
+
+            }
+            g4=setTimeout(ice,150);
+        }
+        ice();
+        function left() {
+            if (glassdir.y > 1) {
+                glassdir.y -= 1;
+                document.getElementById('glass').style.gridColumnStart = glassdir.y;
+            }
+        }
+
+        function right() {
+            if (glassdir.y < 14) {
+                glassdir.y += 1;
+                document.getElementById('glass').style.gridColumnStart = glassdir.y;
+            }
+        }
+        let glass = document.getElementById('glass');
+        document.addEventListener('touchmove', handleTouchMove, false);
+        function handleTouchMove(e) {
+            if (sta == 1) {
+                let touch = e.touches[0]; // Get the first touch object
+                let touchX = touch.clientX; // Get the X coordinate of the touch
+                let boardRect = document.getElementById('board').getBoundingClientRect();
+                let ballX = (touchX - boardRect.left) / boardRect.width * 10;
+                glassdir.y = Math.round(ballX);
+                glass.style.gridColumnStart = glassdir.y;
+            }
+        }
+        window.addEventListener('keydown', e => {
+            if (e.key == "ArrowLeft") {
+                left();
+            } else if (e.key == "ArrowRight") {
+                right();
+            }
+        });
+    </script>
+</body>
+</html>
