@@ -5,13 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
     <title>Catch the Water Drops</title>
     <style>
-        body {
+        body{
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            /* height: 100vh; */
+            height: 95vh;
             /* margin: 0; */
+            background-color: green;
             background-image: url('bi.jpg');
             background-size: cover; 
             background-position: center;
@@ -52,7 +53,7 @@
             height: 50px;
             text-align: center;
             padding-top: 10px;
-            border-radius: 5%;
+            border-radius: 10px;
             background-color: skyblue;
             color: white;
             position: absolute;
@@ -84,10 +85,11 @@
             width: 600px;
             border-radius: 10px;
             text-align: center;
-            margin-bottom: 200px;
+            margin-bottom: 20px;
             font-size: 20px;
             position: absolute;
-            top: 50px; 
+            left: 30%;
+            top: 30px; 
         }
         #stbu {
             grid-row-start: 7;
@@ -120,13 +122,14 @@
             /* border: 2px solid black; */
             position: absolute;
             top: 20px;
+            left: 45%;
             /* margin-bottom: 650px; */
             display: none;
         }
     </style>
 </head>
 <body>
-    
+    <div>
     <div id="over" style="display:none; margin-top: 150px;">
         <h2>You PLayed Very Well</h2>
         <p>Play Again and Cross the Highest Score</p>
@@ -155,9 +158,10 @@
     <audio src="watersound.mp3" id="watersound"></audio>
     <audio src="glassbreaking.mp3" id="glassbreaking"></audio>
     <audio id="bg-music" loop>
-        <source src="rain.mp3" type="audio/mpeg">
+        <source src="rain1.mp3" type="audio/mpeg">
         Your browser does not support the audio element.
     </audio>
+</body>
     <script>
         let glassdir = { x: 16, y: 10 };
         let waterarr = [];
@@ -280,9 +284,7 @@
                 clearTimeout(g3);
                 clearTimeout(g4);
                 document.getElementById('board').style.display='none';
-                document.getElementById('start').pause();
-
-                
+                document.getElementById('bg-music').pause();
                 document.getElementById('over').style.display='block';
 
             }
@@ -320,5 +322,5 @@
             }
         });
     </script>
-</body>
+
 </html>
