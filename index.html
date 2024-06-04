@@ -7,7 +7,7 @@
     <style>
         html, body {
             height: 100%;
-            /* margin: 0; */
+            margin: 0;
         }
         body{
             display: flex;
@@ -26,6 +26,7 @@
         }
 
         #board {
+            margin-top: 50px;
             width: 80vmin;
             height: 92vmin;
             display: grid;
@@ -89,11 +90,9 @@
             width: 600px;
             border-radius: 10px;
             text-align: center;
-            margin-bottom: 20px;
+            /* margin-bottom: 20px; */
             font-size: 20px;
-            position: absolute;
-            left: 30%;
-            top: 30px; 
+            display:none; 
         }
         #stbu {
             grid-row-start: 7;
@@ -126,7 +125,7 @@
             /* border: 2px solid black; */
             position: absolute;
             top: 20px;
-            left: 45%;
+            left: 40%;
             /* margin-bottom: 650px; */
             display: none;
         }
@@ -139,7 +138,7 @@
         <img src="g.png" id="i2" style="width: 50px; height: 50px;" >
         <img src="g.png" id="i3" style="width: 50px; height: 50px; ">
     </div>
-    <div id="over" style="display:none; margin-top: 150px;">
+    <div id="over" >
         <h2>You PLayed Very Well</h2>
         <p>Play Again and Cross the Highest Score</p>
         <button onclick="restart()" style="font-size: 20px; border-radius: 20px; cursor: pointer; padding: 10px;">Start Again</button>
